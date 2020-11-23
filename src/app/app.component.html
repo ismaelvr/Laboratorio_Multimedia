@@ -4,16 +4,11 @@
 
   <h1 style="text-align: center;">Reproductor de vídeo interactivo</h1>
 
-  <div class="video_container" style="text-align: center;">
-    <video style="object-fit: cover;" src={{selectedvideo}} id="example_video_1" class="video-js"
-    controls preload="auto" 
-    data-setup='{"example_option":true}'>
+<div style="object-fit: cover; text-align: center;"> 
+  <video src={{selectedvideo}} id="example_video_1" class="video-js video_container" controls preload="auto" data-setup='{"example_option":true}'>
     <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
   </video>
-  
   <br><br>
-
-  <button (click)="next_video()" class="video_button">Siguiente vídeo</button>
-  </div>
-
+<button (click)="next_video()" class="video_button">Siguiente vídeo</button>
+</div> 
 </body>

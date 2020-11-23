@@ -3,6 +3,8 @@
 }
 
 .video_container{
-    widows: 1080px;;
-    height: 720px;
-}
+    object-fit: cover;
+    text-align: center;
+    height: 480px;
+    width: 854px;
+} 
