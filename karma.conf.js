@@ -19,7 +19,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/lab-multimedia'),
+      dir: require('path').join(__dirname, './coverage/angular-video-player-app'),
       subdir: '.',
       reporters: [
         { type: 'html' },

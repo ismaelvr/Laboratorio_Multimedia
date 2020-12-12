@@ -1,14 +1,210 @@
 <!DOCTYPE html>
 
+<head>
+    <link data-require="bootstrap@*" data-semver="4.1.3" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
+    <script data-require="bootstrap@*" data-semver="4.1.3" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
 <body>
 
-  <h1 style="text-align: center;">Reproductor de vídeo interactivo</h1>
+    <!-- <button (click)="descargar_de_youtube()">Descargar video</button> -->
 
-<div style="object-fit: cover; text-align: center;"> 
-  <video src={{selectedvideo}} id="example_video_1" class="video-js video_container" controls preload="auto" data-setup='{"example_option":true}'>
-    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-  </video>
-  <br><br>
-<button (click)="next_video()" class="video_button">Siguiente vídeo</button>
-</div> 
+    <header>
+        <div class="overlay">
+            <h1>Reproductor de vídeo interactivo</h1>
+            <h2>Laboratorio de Multimedia</h2>
+            <br>
+            <div class="dropzone">
+                <ngx-dropzone class="drop" (change)="onSelect($event)" accept="video/*">
+                    <ngx-dropzone-label>
+                        <div>
+                            <h2>Añadir video local</h2>
+                        </div>
+                    </ngx-dropzone-label>
+                    <ngx-dropzone-preview ngProjectAs="ngx-dropzone-preview" *ngFor="let v of videos" [file]="v" [removable]="true" (removed)="onRemove(v)">
+                        <ngx-dropzone-label>{{ v.name }} ({{ v.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+
+                <ngx-dropzone class="drop_cue" (change)="onSelectcue($event)" [multiple]="false" maxFiles="1" accept=".vtt">
+                    <ngx-dropzone-label>
+                        <div>
+                            <h2>Añadir interactividad</h2>
+                        </div>
+                    </ngx-dropzone-label>
+                    <ngx-dropzone-preview ngProjectAs="ngx-dropzone-preview" *ngFor="let vtt of vtts" [file]="vtt" [removable]="true" (removed)="onRemovecue(v)">
+                        <ngx-dropzone-label>{{ vtt.name }}</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+            </div>
+         
+            <br>
+        </div>
+    </header>
+
+    <br>
+    <div class="video-player-wrapper video_container">
+        <vg-player class="video_container" (onPlayerReady)="onPlayerReady($event)">
+            <div class="cue-point-manager-layer" *ngIf="showCuePointManager">
+                <div class="close fa fa-crosshairs" (click)="showCuePointManager = false"></div>
+
+                <div class="cue-list">
+                    <br>
+                    <table class="cue-table">
+                        <thead>
+                            <tr class="cue-row">
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th class="json-header">Tipo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cue of track?.cues" class="cue-row">
+                                <td>{{ cue.startTime }}</td>
+                                <td>{{ cue.endTime }}</td>
+                                <td class="json">{{ json.parse(cue.text).tipo }}</td>
+                                <td class="actions">
+                                    <button type="button" (click)="onClickRemove(cue)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="add-cue">
+                    <br>
+                    <h2>Añadir preguntas</h2>
+                    <form name="cueForm" #formRef="ngForm" (submit)="onSubmit(formRef, $event)">
+                        <div class="form-field">
+                            <label for="tipo">Tipo</label>
+                            <input type="number" id="tipo" name="tipo" [(ngModel)]="newTestCue.tipo" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="startTime">Inicio</label>
+                            <input type="number" id="startTime" name="startTime" [(ngModel)]="newTestCue.startTime" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="endTime">Fin</label>
+                            <input type="number" id="endTime" name="endTime" [(ngModel)]="newTestCue.endTime" required>
+                        </div>
+                        <div *ngIf="newTestCue.tipo == 1">
+                            <div class="form-field">
+                                <label for="pregunta">Pregunta</label>
+                                <input type="text" id="pregunta" name="pregunta" [(ngModel)]="newTestCue.pregunta" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="respuesta1">Respuesta 1</label>
+                                <input type="text" id="respuesta1" name="respuesta1" [(ngModel)]="newTestCue.respuesta1" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="respuesta2">Respuesta 2</label>
+                                <input type="text" id="respuesta2" name="respuesta2" [(ngModel)]="newTestCue.respuesta2" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="respuesta3">Respuesta 3</label>
+                                <input type="text" id="respuesta3" name="respuesta3" [(ngModel)]="newTestCue.respuesta3" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="respuesta4">Respuesta 4</label>
+                                <input type="text" id="respuesta4" name="respuesta4" [(ngModel)]="newTestCue.respuesta4" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="correcta">Respuesta correcta</label>
+                                <input type="text" id="correcta" name="correcta" [(ngModel)]="newTestCue.respuesta_correcta" required>
+                            </div>
+                        </div>
+                        <div *ngIf="newTestCue.tipo == 2">
+                            <div class="form-field">
+                                <label for="texto">Texto</label>
+                                <input type="text" id="texto" name="texto" [(ngModel)]="newHuecosCue.texto" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="n_textos">Número de textos</label>
+                                <input type="number" id="n_textos" name="n_textos" [(ngModel)]="newHuecosCue.n_textos" required>
+                            </div>
+                        </div>
+                        <button type="submit" [disabled]="!formRef.valid">Añadir Cue</button>
+                    </form>
+                </div>
+            </div>
+            <vg-overlay-play></vg-overlay-play>
+
+            <vg-scrub-bar>
+                <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+                <vg-scrub-bar-cue-points [vgCuePoints]="metadataTrack.cues"></vg-scrub-bar-cue-points>
+            </vg-scrub-bar>
+
+            <vg-controls>
+                <vg-play-pause></vg-play-pause>
+                <vg-playback-button></vg-playback-button>
+
+                <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
+
+                <vg-scrub-bar style="pointer-events: none;"></vg-scrub-bar>
+
+                <vg-time-display vgProperty="left" vgFormat="mm:ss"></vg-time-display>
+                <vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
+
+                <div class="cue-point-manager-button fa fa-edit" (click)="showCuePointManager = !showCuePointManager"></div>
+                <vg-mute></vg-mute>
+                <vg-volume></vg-volume>
+
+                <vg-fullscreen></vg-fullscreen>
+            </vg-controls>
+
+            <ng-container *ngIf="activeCuePoints">
+
+                <div *ngFor="let cuePointData of activeCuePoints" class="info-layer">
+                    <div *ngIf="cuePointData.tipo == 1">
+                        <p style="font-size: 26px;">
+                            {{ cuePointData?.pregunta }}
+                        </p>
+                        <br><br>
+                        <button (click)="comprobar_respuesta(0, cuePointData?.respuesta_correcta)">{{cuePointData?.respuestas[0]}}</button>
+                        <br>
+                        <button (click)="comprobar_respuesta(1, cuePointData?.respuesta_correcta)">{{cuePointData?.respuestas[1]}}</button>
+                        <br>
+                        <button (click)="comprobar_respuesta(2, cuePointData?.respuesta_correcta)">{{cuePointData?.respuestas[2]}}</button>
+                        <br>
+                        <button (click)="comprobar_respuesta(3, cuePointData?.respuesta_correcta)">{{cuePointData?.respuestas[3]}}</button>
+                    </div>
+                    <div *ngIf="cuePointData.tipo == 2">
+                        <label>{{cuePointData.texto}} 
+                        <br><br>
+                        <input style="width: 250px;" id="inputhueco" type="text" size="2" [(ngModel)]="introducido"> </label>
+                        <br><br>
+                        <button (click)="comprobar_respuesta( introducido, cuePointData.respuesta)">Responder</button>
+                    </div>
+                    <br>
+                    <div>
+                        {{mensaje}}
+                    </div>
+                </div>
+            </ng-container>
+
+            <video [vgMedia]="media" #media preload="auto" crossorigin id="video_int" [src]=srcvideo class="video_container" vid-dir (ended)="resultados()">
+                <track [src]=selectedvtt kind="metadata" label="Cue Points" default #metadataTrack vgCuePoints
+                    (onEnterCuePoint)="onEnterCuePoint($event)" (onExitCuePoint)="onExitCuePoint($event)">
+            </video>
+        </vg-player>
+        <div id="check" style="width: 300; text-align: left">
+            <input (change)="repro_automatica()" type="checkbox" id="repro_auto" name="repro_auto" value="repro_auto">
+            <label style="padding-top: 10px;" for="repro_auto">&nbsp;Reproducción automática</label><br>
+        </div>    
+    </div>
+    <br>
+    <div id="botones" style="object-fit: cover; text-align: center;">
+
+        <button style="size: 10px;" (click)="next_video()" class="video_button">Siguiente vídeo</button>
+    </div>
+    
+    <footer>
+        <div class="overlay">
+            <h2>Práctica desarrollada por: </h2><br>
+            <h3 style="font-size: 20px;">Pedro Palencia Quiñones <br> Ismael Vélez Recio</h3>
+        </div>
+    </footer>
 </body>

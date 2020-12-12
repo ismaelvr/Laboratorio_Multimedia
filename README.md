@@ -1,5 +1,7 @@
 # Laboratorio_Multimedia
-Proyecto para el laboratorio de multimedia 
+Proyecto para el laboratorio de multimedia
+
+# AngularVideoPlayerApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.2.
 

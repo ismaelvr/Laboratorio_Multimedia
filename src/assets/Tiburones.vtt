@@ -1,0 +1,36 @@
+WEBVTT FILE
+
+Origen del nombre
+00:00:20.000 --> 00:00:22.000
+{
+    "tipo": 1,
+    "pregunta": "¿Cuál es el origen de su nombre?",
+    "respuestas": ["No se sabe", "Viene del latín 'tibure' ", "Es por la forma de sus aletas", "Es por su parentesco con una animal prehistorico similar"],
+    "respuesta_correcta": 0
+}
+
+Subclase tiburón
+00:00:35.000 --> 00:00:37.000
+{
+    "tipo": 2,
+    "texto": "¿A qué subclase pertenecen tanto los tiburones como las rayas?",
+    "respuesta": "Eslasmobranquios"
+}
+
+Edad tiburones
+00:00:53.000 --> 00:00:55.000
+{
+    "tipo": 1,
+    "pregunta": "¿Desde cuándo llevan los tiburones en la tierra?",
+    "respuestas": ["Más de 300.000 años", "Más de 3.000.000 años", "Más de 30.000.000 años", "Más de 300.000.000 años"],
+    "respuesta_correcta": 3
+}
+
+Subclase tiburón
+00:01:18.000 --> 00:01:20.000
+{
+    "tipo": 2,
+    "texto": "¿De qué se alimenta principalemente el tiburón ballena?",
+    "respuesta": "Fitoplancton"
+}
+
